@@ -10,7 +10,8 @@ public class Main {
     public static void main(String[] args) {
         WebServer webServer = WebServers.createWebServer(9996)
                 .add("/hello", new HelloWorldHandler())
-                .add("/quote", new QuoteHandler());
+                .add("/quote", new ExceptionHandlerWrapper(new QuoteHandler()))
+                .uncaughtExceptionHandler(new WebServerUncaughtExceptionHandler());
         Future future = webServer.start();
         try {
             future.get();

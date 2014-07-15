@@ -30,6 +30,18 @@ public class WoodpeckerApiTest {
     }
 
     @Test
+    public void path_with_missing_param_should_respond_with_404() throws IOException {
+        // given
+        URI uri = URI.create("http://localhost:9996/quote");
+
+        // when
+        Response response = Request.Get(uri).execute();
+
+        // then
+        assertEquals(404, response.returnResponse().getStatusLine().getStatusCode());
+    }
+
+    @Test
     public void mapped_path_should_return_with_200_and_something_in_the_body() throws IOException {
         // given
         URI uri = URI.create("http://localhost:9996/quote?symbol=APPL");

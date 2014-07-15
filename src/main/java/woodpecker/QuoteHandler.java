@@ -1,5 +1,7 @@
 package woodpecker;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
 import org.webbitserver.HttpControl;
@@ -22,12 +24,18 @@ public class QuoteHandler implements HttpHandler {
 
     @Override
     public void handleHttpRequest(HttpRequest request, HttpResponse response, HttpControl control) throws Exception {
-        URI symbol = target(request.queryParam("symbol"));
+        URI symbol = target(mandatoryParam(request, "symbol"));
         Response wsResponse = Request.Get(symbol).execute();
         byte[] content = wsResponse.returnContent().asBytes();
         response.header("Content-type", "application/json")
                 .content(content)
                 .end();
+    }
+
+    private String mandatoryParam(HttpRequest request, String paramName) {
+        String paramValue = request.queryParam(paramName);
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(paramValue), "'%s' is required", paramName);
+        return paramValue;
     }
 
     private URI target(String symbol) throws URISyntaxException {

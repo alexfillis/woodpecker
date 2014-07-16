@@ -10,9 +10,9 @@ import java.util.concurrent.Future;
 public class Main {
     public static void main(String[] args) {
         try {
-            String configFilePath = args[0];
+            String[] configFilePath = args[0].split(";");
             Configuration config = new Configuration(configFilePath);
-            WebServer webServer = WebServers.createWebServer(9996)
+            WebServer webServer = WebServers.createWebServer(config.getInt("http.port", 8080))
                     .add("/hello", new HelloWorldHandler())
                     .add("/quote", new ExceptionHandlerWrapper(new QuoteHandler(config)))
                     .uncaughtExceptionHandler(new WebServerUncaughtExceptionHandler());

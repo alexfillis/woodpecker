@@ -10,9 +10,16 @@ import java.util.Properties;
 public class Configuration {
     private final Properties properties;
 
-    public Configuration(String configFilePath) throws IOException {
-        this.properties = new Properties();
-        this.properties.load(new FileReader(new File(configFilePath)));
+    public Configuration(String... configFilePaths) throws IOException {
+        properties = loadPropertyFiles(configFilePaths);
+    }
+
+    private Properties loadPropertyFiles(String... configFilePaths) throws IOException {
+        Properties tmpProps = new Properties();
+        for (String configFilePath : configFilePaths) {
+            tmpProps.load(new FileReader(new File(configFilePath)));
+        }
+        return tmpProps;
     }
 
     public String getString(String name) {

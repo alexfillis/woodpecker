@@ -15,16 +15,24 @@ import java.net.URISyntaxException;
 import static java.lang.String.format;
 
 public class QuoteHandler implements HttpHandler {
-    private final String scheme = "http";
-    private final String host = "query.yahooapis.com";
-    private final String path = "/v1/public/yql";
-    private final String yqlParam = "q=select * from yahoo.finance.quotes where symbol in (\"%s\")";
-    private final String envParam = "env=store://datatables.org/alltableswithkeys";
-    private final String formatParam = "format=json";
+    private static final String scheme = "http";
+    private static final String path = "/v1/public/yql";
+    private static final String yqlParam = "q=select * from yahoo.finance.quotes where symbol in (\"%s\")";
+    private static final String envParam = "env=store://datatables.org/alltableswithkeys";
+    private static final String formatParam = "format=json";
+
+    private final String host;
+    private final int port;
+
+    public QuoteHandler(Configuration config) {
+        host = config.getString("yahoo.yql.host");
+        port = config.getInt("yahoo.yql.port", 8080);
+    }
+
 
     @Override
     public void handleHttpRequest(HttpRequest request, HttpResponse response, HttpControl control) throws Exception {
-        URI symbol = target(mandatoryParam(request, "symbol"));
+        URI symbol = target(queries(format(yqlParam, mandatoryParam(request, "symbol")), envParam, formatParam));
         Response wsResponse = Request.Get(symbol).execute();
         byte[] content = wsResponse.returnContent().asBytes();
         response.header("Content-type", "application/json")
@@ -38,8 +46,8 @@ public class QuoteHandler implements HttpHandler {
         return paramValue;
     }
 
-    private URI target(String symbol) throws URISyntaxException {
-        return new URI(scheme, host, path, queries(format(yqlParam, symbol), envParam, formatParam), null);
+    private URI target(String query) throws URISyntaxException {
+        return new URI(scheme, null, host, port, path, query, null);
     }
 
     private String queries(String... queries) {

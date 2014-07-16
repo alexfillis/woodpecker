@@ -1,0 +1,9 @@
+-  request:
+      method: GET
+      url: /v1/public/yql
+
+   response:
+      status: 200
+      headers:
+         content-type: application/json
+      file: stock_0005_hk.json

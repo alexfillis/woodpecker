@@ -14,7 +14,7 @@ public class Main {
             Configuration config = new Configuration(configFilePath);
             WebServer webServer = WebServers.createWebServer(config.getInt("http.port", 8080))
                     .add("/hello", new HelloWorldHandler())
-                    .add("/quote", new ExceptionHandlerWrapper(new QuoteHandler(config)))
+                    .add("/quote", new ExceptionHandlerWrapper(new QuoteHandler(new YahooFinanceTickers(config))))
                     .uncaughtExceptionHandler(new WebServerUncaughtExceptionHandler());
             Future future = webServer.start();
             future.get();

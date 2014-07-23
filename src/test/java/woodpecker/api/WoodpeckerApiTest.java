@@ -2,7 +2,6 @@ package woodpecker.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.fluent.Content;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
 import org.junit.Test;
@@ -14,6 +13,10 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+/**
+ * Stubby start command
+ * java -jar stubby4j-2.0.21.jar --data /home/alex/dev/woodpecker/src/test/resources/woodpecker/data/stub/external/service/yahoo/finance/stock_0005_hk.yml -s 9001
+ */
 public class WoodpeckerApiTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 

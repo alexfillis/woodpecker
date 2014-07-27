@@ -20,9 +20,12 @@ public class Main {
         try {
             String[] configFilePath = args[0].split(";");
             Configuration config = new Configuration(configFilePath);
+
+            CacheFinanceTickers tickers = new CacheFinanceTickers(new YahooFinanceTickers(config));
+
             WebServer webServer = WebServers.createWebServer(config.getInt("http.port", 8080))
                     .add("/hello", new HelloWorldHandler())
-                    .add("/quote", new ExceptionHandlerWrapper(new QuoteHandler(new YahooFinanceTickers(config))))
+                    .add("/quote", new ExceptionHandlerWrapper(new QuoteHandler(tickers)))
                     .uncaughtExceptionHandler(new WebServerUncaughtExceptionHandler());
             Future future = webServer.start();
             future.get();

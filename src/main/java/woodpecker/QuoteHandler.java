@@ -8,9 +8,9 @@ import org.webbitserver.HttpRequest;
 import org.webbitserver.HttpResponse;
 
 public class QuoteHandler implements HttpHandler {
-    private final YahooFinanceTickers tickers;
+    private final FinanceTickers tickers;
 
-    public QuoteHandler(YahooFinanceTickers tickers) {
+    public QuoteHandler(FinanceTickers tickers) {
         this.tickers = tickers;
     }
 

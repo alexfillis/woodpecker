@@ -9,7 +9,7 @@ import java.net.URISyntaxException;
 
 import static java.lang.String.format;
 
-public class YahooFinanceTickers {
+public class YahooFinanceTickers implements FinanceTickers {
     private static final String scheme = "http";
     private static final String path = "/v1/public/yql";
     private static final String yqlParam = "q=select * from yahoo.finance.quotes where symbol in (\"%s\")";
@@ -24,6 +24,7 @@ public class YahooFinanceTickers {
         port = config.getInt("yahoo.yql.port", 8080);
     }
 
+    @Override
     public byte[] getTicker(String symbol) throws URISyntaxException, IOException {
         URI uri = target(queries(format(yqlParam, symbol), envParam, formatParam));
         Response wsResponse = Request.Get(uri).execute();

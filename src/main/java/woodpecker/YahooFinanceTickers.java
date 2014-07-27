@@ -1,5 +1,7 @@
 package woodpecker;
 
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
 
@@ -7,6 +9,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import static com.codahale.metrics.MetricRegistry.*;
 import static java.lang.String.format;
 
 public class YahooFinanceTickers implements FinanceTickers {
@@ -18,10 +21,14 @@ public class YahooFinanceTickers implements FinanceTickers {
 
     private final String host;
     private final int port;
+    private final Counter successRequestCount;
+    private final Counter failRequestCount;
 
-    public YahooFinanceTickers(Configuration config) {
+    public YahooFinanceTickers(Configuration config, MetricRegistry metricRegistry) {
         host = config.getString("yahoo.yql.host");
         port = config.getInt("yahoo.yql.port", 8080);
+        successRequestCount = metricRegistry.counter(name(getClass(), "request", "success"));
+        failRequestCount = metricRegistry.counter(name(getClass(), "request", "fail"));
     }
 
     @Override
@@ -29,8 +36,10 @@ public class YahooFinanceTickers implements FinanceTickers {
         try {
             URI uri = target(queries(format(yqlParam, symbol), envParam, formatParam));
             Response wsResponse = Request.Get(uri).execute();
+            successRequestCount.inc();
             return wsResponse.returnContent().asBytes();
         } catch (URISyntaxException | IOException e) {
+            failRequestCount.inc();
             throw new TickerException(e);
         }
     }

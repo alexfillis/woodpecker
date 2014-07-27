@@ -25,10 +25,14 @@ public class YahooFinanceTickers implements FinanceTickers {
     }
 
     @Override
-    public byte[] getTicker(String symbol) throws URISyntaxException, IOException {
-        URI uri = target(queries(format(yqlParam, symbol), envParam, formatParam));
-        Response wsResponse = Request.Get(uri).execute();
-        return wsResponse.returnContent().asBytes();
+    public byte[] getTicker(String symbol) {
+        try {
+            URI uri = target(queries(format(yqlParam, symbol), envParam, formatParam));
+            Response wsResponse = Request.Get(uri).execute();
+            return wsResponse.returnContent().asBytes();
+        } catch (URISyntaxException | IOException e) {
+            throw new TickerException(e);
+        }
     }
 
     private URI target(String query) throws URISyntaxException {

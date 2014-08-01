@@ -2,15 +2,18 @@ package woodpecker;
 
 import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.jvm.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.webbitserver.WebServer;
 import org.webbitserver.WebServers;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import static com.codahale.metrics.MetricRegistry.name;
 import static java.util.concurrent.TimeUnit.*;
 
 public class Main {
@@ -26,6 +29,11 @@ public class Main {
             Configuration config = new Configuration(configFilePath);
 
             final MetricRegistry registry = new MetricRegistry();
+            registry.register(name(getClass(), "buffers"), new BufferPoolMetricSet(ManagementFactory.getPlatformMBeanServer()));
+            registry.register(name(getClass(), "files"), new FileDescriptorRatioGauge());
+            registry.register(name(getClass(), "garbage"), new GarbageCollectorMetricSet());
+            registry.register(name(getClass(), "memory"), new MemoryUsageGaugeSet());
+            registry.register(name(getClass(), "threads"), new ThreadStatesGaugeSet());
             final ConsoleReporter reporter = ConsoleReporter.forRegistry(registry)
                     .convertRatesTo(SECONDS)
                     .convertDurationsTo(MILLISECONDS)

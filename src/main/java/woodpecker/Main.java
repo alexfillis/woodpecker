@@ -3,6 +3,7 @@ package woodpecker;
 import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.jvm.*;
+import org.elasticsearch.metrics.ElasticsearchReporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.webbitserver.WebServer;
@@ -10,10 +11,12 @@ import org.webbitserver.WebServers;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.net.InetAddress;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import static com.codahale.metrics.MetricRegistry.name;
+import static java.lang.String.format;
 import static java.util.concurrent.TimeUnit.*;
 
 public class Main {
@@ -39,6 +42,13 @@ public class Main {
                     .convertDurationsTo(MILLISECONDS)
                     .build();
             reporter.start(1, MINUTES);
+            ElasticsearchReporter esReporter = ElasticsearchReporter.forRegistry(registry)
+                    .hosts("localhost:9200", "localhost:9201")
+                    .prefixedWith(format("%s:%d", InetAddress.getLocalHost().getHostName(), config.getInt("http.port", 8080)))
+                    .convertRatesTo(SECONDS)
+                    .convertDurationsTo(MILLISECONDS)
+                    .build();
+            esReporter.start(1, MINUTES);
 
             CacheFinanceTickers tickers = new CacheFinanceTickers(new YahooFinanceTickers(config, registry));
 

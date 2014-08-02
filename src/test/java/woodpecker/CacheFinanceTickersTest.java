@@ -1,5 +1,6 @@
 package woodpecker;
 
+import com.codahale.metrics.MetricRegistry;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -10,7 +11,8 @@ import static org.mockito.Mockito.*;
 
 public class CacheFinanceTickersTest {
     private final FinanceTickers financeTickers = mock(FinanceTickers.class);
-    private final CacheFinanceTickers cacheFinanceTickers = new CacheFinanceTickers(financeTickers);
+    private final MetricRegistry metrics = mock(MetricRegistry.class);
+    private final CacheFinanceTickers cacheFinanceTickers = new CacheFinanceTickers(financeTickers, metrics);
 
     @Test
     public void wrapped_impl_should_be_called_when_NOT_in_cache() throws IOException, URISyntaxException {

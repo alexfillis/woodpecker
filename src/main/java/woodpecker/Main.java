@@ -50,7 +50,7 @@ public class Main {
                     .build();
             esReporter.start(1, MINUTES);
 
-            CacheFinanceTickers tickers = new CacheFinanceTickers(new YahooFinanceTickers(config, registry));
+            CacheFinanceTickers tickers = new CacheFinanceTickers(new YahooFinanceTickers(config, registry), registry);
 
             WebServer webServer = WebServers.createWebServer(config.getInt("http.port", 8080))
                     .add("/hello", new MetricsHandlerWrapper(new HelloWorldHandler(), registry))

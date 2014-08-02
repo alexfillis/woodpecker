@@ -1,5 +1,6 @@
 package woodpecker;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -13,7 +14,7 @@ public class CacheFinanceTickers implements FinanceTickers {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final LoadingCache<String, byte[]> tickersCache;
 
-    public CacheFinanceTickers(final FinanceTickers tickers) {
+    public CacheFinanceTickers(final FinanceTickers tickers, MetricRegistry metrics) {
         tickersCache = CacheBuilder.newBuilder()
                 .maximumSize(1000)
                 .expireAfterWrite(5, TimeUnit.MINUTES)
@@ -23,6 +24,7 @@ public class CacheFinanceTickers implements FinanceTickers {
                                 return tickers.getTicker(symbol);
                             }
                         });
+        metrics.registerAll(new CacheMetricSet<>(tickersCache, "tickers"));
     }
 
     @Override

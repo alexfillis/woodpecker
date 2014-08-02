@@ -10,14 +10,14 @@ import org.webbitserver.HttpResponse;
 
 import static com.codahale.metrics.MetricRegistry.*;
 
-public class CounterHandlerWrapper implements HttpHandler {
+public class MetricsHandlerWrapper implements HttpHandler {
 
     private final HttpHandler handler;
     private final Counter successCounter;
     private final Counter failCounter;
     private final Timer requestTimer;
 
-    public CounterHandlerWrapper(HttpHandler handler, MetricRegistry metricRegistry) {
+    public MetricsHandlerWrapper(HttpHandler handler, MetricRegistry metricRegistry) {
         this.handler = handler;
         successCounter = metricRegistry.counter(name(handler.getClass(), "request", "success"));
         failCounter = metricRegistry.counter(name(handler.getClass(), "request", "fail"));

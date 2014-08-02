@@ -53,8 +53,8 @@ public class Main {
             CacheFinanceTickers tickers = new CacheFinanceTickers(new YahooFinanceTickers(config, registry));
 
             WebServer webServer = WebServers.createWebServer(config.getInt("http.port", 8080))
-                    .add("/hello", new CounterHandlerWrapper(new HelloWorldHandler(), registry))
-                    .add("/quote", new ExceptionHandlerWrapper(new CounterHandlerWrapper(new QuoteHandler(tickers), registry)))
+                    .add("/hello", new MetricsHandlerWrapper(new HelloWorldHandler(), registry))
+                    .add("/quote", new ExceptionHandlerWrapper(new MetricsHandlerWrapper(new QuoteHandler(tickers), registry)))
                     .uncaughtExceptionHandler(new WebServerUncaughtExceptionHandler(registry));
             Future future = webServer.start();
             future.get();

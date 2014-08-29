@@ -17,7 +17,9 @@ public class Configuration {
     private Properties loadPropertyFiles(String... configFilePaths) throws IOException {
         Properties tmpProps = new Properties();
         for (String configFilePath : configFilePaths) {
-            tmpProps.load(new FileReader(new File(configFilePath)));
+            try (FileReader fin = new FileReader(new File(configFilePath))) {
+                tmpProps.load(fin);
+            }
         }
         return tmpProps;
     }
